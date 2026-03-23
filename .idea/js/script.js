@@ -2,26 +2,52 @@ const input = document.getElementById("taskInput");
 const button = document.getElementById("addBtn");
 const list = document.getElementById("taskList");
 
-button.addEventListener("click", () => {
-    //^^ When we click on this button, execute this function ^^ ---------- Quand on clic sur ce bouton, ça execute la fonction.
-    //        () => {} code to execute
-    const taskText = input.values;
-    //We get what the user write ------------- on récupère ce que le user va taper dans les tasks.
+// ADD TASK
+function addTask() {
+    const taskText = input.value.trim();
 
     if (taskText === "") return;
-    //If the user didn't write, then stop. We can't add empty field. ------------ si le user ne marque rien, on arrête.
 
     const li = document.createElement("li");
-    li.textContent = taskText;
-    //we create a HTML element "li" and we put in taskText - result => <li> tasktask </li>
 
-    li.addEventListener("click", () =>{
-        //we add an event on the task
+    const span = document.createElement("span");
+    span.textContent = taskText;
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "X";
+
+    deleteBtn.addEventListener("click", () => {
         li.remove();
-    }) //Delete a task when we click on it
+        saveTasks();
+    });
 
-
+    li.appendChild(span);
+    li.appendChild(deleteBtn);
     list.appendChild(li);
-    //^^^^ we add a task in the list, kind of <ul> and <li> system.
+
     input.value = "";
-})
+
+    saveTasks();
+}
+
+// CLICK
+button.addEventListener("click", addTask);
+
+// ENTER
+input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        addTask();
+    }
+});
+
+// SAVE
+function saveTasks() {
+    localStorage.setItem("tasks", list.innerHTML);
+}
+
+// LOAD
+function loadTasks() {
+    list.innerHTML = localStorage.getItem("tasks") || "";
+}
+
+loadTasks();
