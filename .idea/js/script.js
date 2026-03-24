@@ -1,3 +1,61 @@
+// NAVBAR / UI
+// HAMBURGER MENU
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
+
+if (hamburger) {
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+}
+
+// GREETING
+const greeting = document.getElementById('greeting');
+
+if (greeting) {
+    const hour = new Date().getHours();
+
+    if (hour >= 18) {
+        greeting.textContent = "Bonsoir !";
+    } else if (hour >= 12) {
+        greeting.textContent = "Bon après-midi !";
+    } else {
+        greeting.textContent = "Bon matin !";
+    }
+}
+
+// DARK MODE
+const themeToggle = document.getElementById('theme-toggle');
+const savedTheme = localStorage.getItem('theme');
+
+if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+}
+
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
+    });
+}
+
+// MAGIC BUTTON
+const magicBtn = document.getElementById("magic-btn");
+
+if (magicBtn) {
+    magicBtn.addEventListener("click", () => {
+        const randomColor = Math.floor(Math.random()*16777215).toString(16);
+        document.body.style.backgroundColor = "#" + randomColor;
+        magicBtn.textContent = "Couleur : #" + randomColor;
+    });
+}
+
+// TO DO LIST
 // Get DOM elements ---- Les élements DOM
 const input = document.getElementById("taskInput");
 const button = document.getElementById("addBtn");
@@ -53,6 +111,21 @@ function renderTasks() {
         const span = document.createElement("span");
         span.textContent = task.text;
 
+        // EDIT TASK (double click)
+        span.addEventListener("dblclick", () => {
+            const newText = prompt("Edit task:", task.text);
+
+            // If user cancels or empty input → do nothing
+            if (!newText || newText.trim() === "") return;
+
+            // Update task text
+            tasks[index].text = newText.trim();
+
+            // Update UI and storage
+            renderTasks();
+            saveTasks();
+        });
+
         // Apply "done" style if task is completed --- ajoute "done" si la tache est faite
         if (task.done) {
             span.classList.add("done");
@@ -83,6 +156,13 @@ function renderTasks() {
         li.appendChild(deleteBtn);
         list.appendChild(li);
     });
+
+    // TASK COUNTER (simple)
+    const counter = document.getElementById("taskCounter");
+    if (counter) {
+        const remaining = tasks.filter(t => !t.done).length;
+        counter.textContent = remaining + " tasks left";
+    }
 }
 
 // SAVE TASKS (localStorage)
@@ -104,15 +184,20 @@ function loadTasks() {
     renderTasks();
 }
 
-// Add task on button click
-button.addEventListener("click", addTask);
+// EVENTS
+if (button) {
+    // Add task on button click
+    button.addEventListener("click", addTask);
+}
 
-// Add task when pressing ENTER
-input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        addTask();
-    }
-});
+if (input) {
+    // Add task when pressing ENTER
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            addTask();
+        }
+    });
+}
 
 // INIT APP
 loadTasks();
